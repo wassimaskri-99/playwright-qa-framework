@@ -4,9 +4,11 @@
   "private": true,
   "description": "E2E and API test automation framework covering SauceDemo and Restful-Booker, built with Playwright and TypeScript.",
   "scripts": {
+    "pretest": "bddgen",
     "test": "playwright test",
     "test:e2e": "playwright test --project=e2e",
     "test:api": "playwright test --project=api",
+    "test:bdd": "bddgen && playwright test --project=bdd",
     "test:headed": "playwright test --project=e2e --headed",
     "test:debug": "playwright test --debug",
     "report": "playwright show-report",
@@ -21,6 +23,7 @@
     "eslint": "^8.57.0",
     "eslint-config-prettier": "^9.1.0",
     "eslint-plugin-playwright": "^1.8.3",
+    "playwright-bdd": "^9.2.1",
     "prettier": "^3.3.3",
     "typescript": "^5.6.2"
   }
