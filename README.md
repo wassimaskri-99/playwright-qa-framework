@@ -1,6 +1,13 @@
 # playwright-qa-framework
 
+[![Tests](https://github.com/wassimaskri-99/playwright-qa-framework/actions/workflows/tests.yml/badge.svg)](https://github.com/wassimaskri-99/playwright-qa-framework/actions/workflows/tests.yml)
+[![Live report](https://img.shields.io/badge/report-live-2ea44f?logo=github)](https://wassimaskri-99.github.io/playwright-qa-framework/)
+![Playwright](https://img.shields.io/badge/Playwright-2EAD33?logo=playwright&logoColor=white)
+![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?logo=typescript&logoColor=white)
+
 E2E and API test automation built with Playwright and TypeScript.
+
+📊 **[See the latest test report](https://wassimaskri-99.github.io/playwright-qa-framework/)**. CI publishes it on every push to `main`.
 
 - **E2E** — [SauceDemo](https://www.saucedemo.com) (login, cart, checkout), using the Page Object Model
 - **API** — [restful-booker](https://restful-booker.herokuapp.com) (auth, booking CRUD)
