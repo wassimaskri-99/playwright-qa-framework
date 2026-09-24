@@ -21,6 +21,8 @@ export default defineConfig({
   use: {
     trace: 'on-first-retry',
     screenshot: 'only-on-failure',
+    // e.g. `SLOWMO=500 npm run test:headed` to watch each browser action.
+    launchOptions: { slowMo: Number(process.env.SLOWMO ?? 0) },
   },
   webServer: {
     command: 'node ai-assistant/server.ts',
