@@ -6,10 +6,11 @@ const bddTestDir = defineBddConfig({
   steps: ['steps/*.steps.ts', 'fixtures/pages.fixture.ts'],
 });
 
-// Three independent projects: UI flows against SauceDemo, API contract tests
-// against Restful-Booker, and the Cucumber/Gherkin scenarios compiled by
-// playwright-bdd. Kept separate so `npm run test:api` never spins up
-// a browser and CI can shard them if the suite grows.
+// Four independent projects: UI flows against SauceDemo, API contract tests
+// against Restful-Booker, the Cucumber/Gherkin scenarios compiled by
+// playwright-bdd, and the AI shopping assistant (local LLM via Ollama).
+// Kept separate so `npm run test:api` never spins up a browser and CI can
+// shard them if the suite grows.
 export default defineConfig({
   testDir: './tests',
   fullyParallel: true,
@@ -20,6 +21,11 @@ export default defineConfig({
   use: {
     trace: 'on-first-retry',
     screenshot: 'only-on-failure',
+  },
+  webServer: {
+    command: 'node ai-assistant/server.ts',
+    url: 'http://localhost:3100/health',
+    reuseExistingServer: !process.env.CI,
   },
   projects: [
     {
@@ -43,6 +49,15 @@ export default defineConfig({
       use: {
         ...devices['Desktop Chrome'],
         baseURL: 'https://www.saucedemo.com',
+      },
+    },
+    {
+      name: 'ai',
+      testDir: './tests/ai',
+      // A small model on a CPU-only CI runner can take a few seconds per answer.
+      timeout: 60_000,
+      use: {
+        baseURL: 'http://localhost:3100',
       },
     },
   ],
