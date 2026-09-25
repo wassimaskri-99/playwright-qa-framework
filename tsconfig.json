@@ -20,6 +20,7 @@
     "pages/**/*.ts",
     "fixtures/**/*.ts",
     "steps/**/*.ts",
+    "ai-assistant/**/*.ts",
     "playwright.config.ts"
   ]
 }

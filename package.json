@@ -9,6 +9,8 @@
     "test:e2e": "playwright test --project=e2e",
     "test:api": "playwright test --project=api",
     "test:bdd": "bddgen && playwright test --project=bdd",
+    "test:ai": "playwright test --project=ai",
+    "assistant": "node ai-assistant/server.ts",
     "test:headed": "playwright test --project=e2e --headed",
     "test:debug": "playwright test --debug",
     "report": "playwright show-report",

@@ -20,11 +20,20 @@ jobs:
 
       - uses: actions/setup-node@v4
         with:
-          node-version: 20
+          # 22 runs the AI assistant's TypeScript directly (no build step).
+          node-version: 22
 
       - run: npm ci
 
       - run: npx playwright install --with-deps chromium
+
+      # Local open-source LLM for the AI assistant tests: free, no API key.
+      - name: Install Ollama and pull the model
+        run: |
+          curl -fsSL https://ollama.com/install.sh | sh
+          curl -sf http://localhost:11434/api/version || (ollama serve > /dev/null 2>&1 &)
+          for i in $(seq 1 30); do curl -sf http://localhost:11434/api/version && break; sleep 1; done
+          ollama pull qwen2.5:1.5b
 
       - run: npm test
 
