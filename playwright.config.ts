@@ -1,6 +1,13 @@
 import { defineConfig, devices } from '@playwright/test';
 import { defineBddConfig } from 'playwright-bdd';
 
+// Picks up N8N_WEBHOOK_URL (and anything else) from a local .env, if there is one.
+try {
+  process.loadEnvFile();
+} catch {
+  // no .env file
+}
+
 const bddTestDir = defineBddConfig({
   features: 'features/*.feature',
   steps: ['steps/*.steps.ts', 'fixtures/pages.fixture.ts'],
@@ -17,7 +24,7 @@ export default defineConfig({
   forbidOnly: !!process.env.CI,
   retries: process.env.CI ? 2 : 0,
   workers: process.env.CI ? 2 : undefined,
-  reporter: [['html', { open: 'never' }], ['list']],
+  reporter: [['html', { open: 'never' }], ['list'], ['./reporters/n8n-reporter.ts']],
   use: {
     trace: 'on-first-retry',
     screenshot: 'only-on-failure',
