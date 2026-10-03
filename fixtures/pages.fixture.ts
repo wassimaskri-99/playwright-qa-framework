@@ -3,12 +3,14 @@ import { LoginPage } from '@pages/LoginPage';
 import { InventoryPage } from '@pages/InventoryPage';
 import { CartPage } from '@pages/CartPage';
 import { CheckoutPage } from '@pages/CheckoutPage';
+import { ProductPage } from '@pages/ProductPage';
 
 type Pages = {
   loginPage: LoginPage;
   inventoryPage: InventoryPage;
   cartPage: CartPage;
   checkoutPage: CheckoutPage;
+  productPage: ProductPage;
 };
 
 export const test = base.extend<Pages>({
@@ -23,6 +25,9 @@ export const test = base.extend<Pages>({
   },
   checkoutPage: async ({ page }, use) => {
     await use(new CheckoutPage(page));
+  },
+  productPage: async ({ page }, use) => {
+    await use(new ProductPage(page));
   },
 });
 
