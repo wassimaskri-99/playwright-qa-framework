@@ -9,23 +9,20 @@ try {
 }
 
 const bddTestDir = defineBddConfig({
-  features: 'features/*.feature',
-  steps: ['steps/*.steps.ts', 'fixtures/pages.fixture.ts'],
+  features: 'tests/saucedemo/bdd/features/*.feature',
+  steps: ['tests/saucedemo/bdd/steps/*.steps.ts', 'src/saucedemo/fixtures.ts'],
 });
 
-// Five independent projects: UI flows against SauceDemo, API contract tests
-// against Restful-Booker, the Cucumber/Gherkin scenarios compiled by
-// playwright-bdd, the DevExtreme CRM app (crm-app/), and the AI shopping
-// assistant (local LLM via Ollama).
-// Kept separate so `npm run test:api` never spins up a browser and CI can
-// shard them if the suite grows.
+// One project per application under test. Each name matches its folders:
+// tests/<name>/ for the specs, src/<name>/ for page objects and clients,
+// and apps/<name>/ when we run the app ourselves.
 export default defineConfig({
   testDir: './tests',
   fullyParallel: true,
   forbidOnly: !!process.env.CI,
   retries: process.env.CI ? 2 : 0,
   workers: process.env.CI ? 2 : undefined,
-  reporter: [['html', { open: 'never' }], ['list'], ['./reporters/n8n-reporter.ts']],
+  reporter: [['html', { open: 'never' }], ['list'], ['./tools/n8n/reporter.ts']],
   use: {
     trace: 'on-first-retry',
     screenshot: 'only-on-failure',
@@ -34,14 +31,13 @@ export default defineConfig({
   },
   webServer: [
     {
-      command: 'node ai-assistant/server.ts',
+      command: 'node apps/ai-assistant/server.ts',
       url: 'http://localhost:3100/health',
       reuseExistingServer: !process.env.CI,
     },
     {
-      // DevExtreme CRM template (crm-app/). 4300 so it doesn't clash with
-      // another Angular app on the default 4200.
-      command: 'npm --prefix crm-app start -- --port 4300',
+      // Port 4300 so it doesn't clash with another Angular app on 4200.
+      command: 'npm --prefix apps/crm start -- --port 4300',
       url: 'http://localhost:4300',
       reuseExistingServer: !process.env.CI,
       timeout: 180_000,
@@ -49,22 +45,23 @@ export default defineConfig({
   ],
   projects: [
     {
-      name: 'e2e',
-      testDir: './tests/e2e',
+      name: 'saucedemo',
+      testDir: './tests/saucedemo',
+      testIgnore: '**/bdd/**',
       use: {
         ...devices['Desktop Chrome'],
         baseURL: 'https://www.saucedemo.com',
       },
     },
     {
-      name: 'api',
-      testDir: './tests/api',
+      name: 'restful-booker',
+      testDir: './tests/restful-booker',
       use: {
         baseURL: 'https://restful-booker.herokuapp.com',
       },
     },
     {
-      name: 'bdd',
+      name: 'saucedemo-bdd',
       testDir: bddTestDir,
       use: {
         ...devices['Desktop Chrome'],
@@ -80,8 +77,8 @@ export default defineConfig({
       },
     },
     {
-      name: 'ai',
-      testDir: './tests/ai',
+      name: 'ai-assistant',
+      testDir: './tests/ai-assistant',
       // A small model on a CPU-only CI runner can take a few seconds per answer.
       timeout: 60_000,
       use: {

@@ -1,4 +1,5 @@
-import { test, expect, crmUser } from '@fixtures/crm.fixture';
+import { test, expect } from '@crm/fixtures';
+import { crmUser } from '@crm/users';
 
 test.describe('CRM login', () => {
   test('should send a logged-out user to the sign-in page', async ({ page }) => {

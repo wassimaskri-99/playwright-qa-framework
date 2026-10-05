@@ -7,6 +7,6 @@ playwright/.cache/
 .env
 *.log
 .DS_Store
-crm-app/build/
-crm-app/.angular/
+apps/crm/build/
+apps/crm/.angular/
 .playwright-mcp/

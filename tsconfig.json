@@ -11,16 +11,17 @@
     "resolveJsonModule": true,
     "baseUrl": ".",
     "paths": {
-      "@pages/*": ["pages/*"],
-      "@fixtures/*": ["fixtures/*"]
+      "@saucedemo/*": ["src/saucedemo/*"],
+      "@crm/*": ["src/crm/*"],
+      "@restful-booker/*": ["src/restful-booker/*"],
+      "@ai-assistant/*": ["src/ai-assistant/*"]
     }
   },
   "include": [
     "tests/**/*.ts",
-    "pages/**/*.ts",
-    "fixtures/**/*.ts",
-    "steps/**/*.ts",
-    "ai-assistant/**/*.ts",
+    "src/**/*.ts",
+    "tools/**/*.ts",
+    "apps/ai-assistant/**/*.ts",
     "playwright.config.ts"
   ]
 }

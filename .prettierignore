@@ -1,3 +1,5 @@
-crm-app/
+apps/crm/
 playwright-report/
 test-results/
+.claude/
+.mcp.json
