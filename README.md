@@ -23,6 +23,8 @@ fixtures/    Custom fixtures (POM injection) and test data
 tests/e2e/   UI test specs
 tests/api/   API test specs
 tests/ai/    AI assistant specs (answers + safety)
+reporters/   n8n reporter (sends the run summary to Telegram via n8n)
+n8n/         n8n workflow, imported by docker compose
 ai-assistant/ The LLM shopping assistant under test
 crm-app/     DevExtreme Angular CRM template under test
 pages/crm/   Page objects for the CRM app
@@ -92,6 +94,31 @@ They're fixed now, and the tests that caught them pass 5/5. Rewriting the system
 - **Input guard**: obvious injection phrases ("ignore your rules", "admin mode") are refused before they reach the model.
 - **Topic check**: a separate call asks the model to pick one category (`shopping`, `creative_writing`, `general_question`). A small model gets this right far more reliably than remembering to refuse while answering.
 - **Output check**: prices always come from the catalog, never from the model. An answer quoting a price that isn't in the catalog, or calling something free, is replaced.
+
+## Test results on Telegram (n8n)
+
+After each run, a small Playwright reporter ([`reporters/n8n-reporter.ts`](reporters/n8n-reporter.ts)) posts a summary to an [n8n](https://n8n.io) webhook. The n8n workflow checks for failures and sends a Telegram message: a one-liner when everything passes, or the list of failing tests with their first error line when something breaks.
+
+```
+npm test → n8n-reporter → n8n webhook → Any failures? → Telegram
+```
+
+To set it up locally:
+
+1. Create a bot with [@BotFather](https://t.me/BotFather) and send it any message.
+2. `cp .env.example .env`, then fill in `TELEGRAM_BOT_TOKEN` and `TELEGRAM_CHAT_ID` (open `https://api.telegram.org/bot<TOKEN>/getUpdates` and copy `chat.id`).
+3. Start n8n and load the workflow:
+
+   ```bash
+   docker compose up -d
+   docker compose exec n8n n8n import:workflow --input=/workflows/test-results.workflow.json
+   docker compose exec n8n n8n publish:workflow --id=playwrightTestResults
+   docker compose restart n8n
+   ```
+
+4. Run `npm test`. The message arrives when the run ends.
+
+The reporter does nothing when `N8N_WEBHOOK_URL` is empty, so it never gets in the way of a normal run. CI sends results too if the repo has an `N8N_WEBHOOK_URL` secret pointing at a public n8n instance. A local n8n isn't reachable from GitHub Actions, so without that secret CI just skips the notification. The workflow is visible at http://localhost:5678 (create the owner account on first visit).
 
 ## Notes from testing the APIs
 
