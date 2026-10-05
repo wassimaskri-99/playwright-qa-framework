@@ -9,3 +9,4 @@ playwright/.cache/
 .DS_Store
 crm-app/build/
 crm-app/.angular/
+.playwright-mcp/

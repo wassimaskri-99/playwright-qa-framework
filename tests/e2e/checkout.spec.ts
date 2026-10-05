@@ -27,4 +27,22 @@ test.describe('Checkout', () => {
 
     await expect(checkoutPage.errorMessage).toContainText('First Name is required');
   });
+
+  test('should display error when last name is missing', async ({ cartPage, checkoutPage }) => {
+    await cartPage.checkout();
+    await checkoutPage.fillInfo('John', '', '12345');
+
+    await checkoutPage.continueToOverview();
+
+    await expect(checkoutPage.errorMessage).toContainText('Last Name is required');
+  });
+
+  test('should display error when postal code is missing', async ({ cartPage, checkoutPage }) => {
+    await cartPage.checkout();
+    await checkoutPage.fillInfo('John', 'Doe', '');
+
+    await checkoutPage.continueToOverview();
+
+    await expect(checkoutPage.errorMessage).toContainText('Postal Code is required');
+  });
 });

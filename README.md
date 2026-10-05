@@ -29,6 +29,7 @@ ai-assistant/ The LLM shopping assistant under test
 crm-app/     DevExtreme Angular CRM template under test
 pages/crm/   Page objects for the CRM app
 tests/crm/   CRM specs
+specs/       Test plans written by the planner agent
 features/    Gherkin scenarios (.feature)
 steps/       Step definitions, backed by the same page objects
 ```
@@ -119,6 +120,29 @@ To set it up locally:
 4. Run `npm test`. The message arrives when the run ends.
 
 The reporter does nothing when `N8N_WEBHOOK_URL` is empty, so it never gets in the way of a normal run. CI sends results too if the repo has an `N8N_WEBHOOK_URL` secret pointing at a public n8n instance. A local n8n isn't reachable from GitHub Actions, so without that secret CI just skips the notification. The workflow is visible at http://localhost:5678 (create the owner account on first visit).
+
+## AI test agents (planner, generator, healer)
+
+The repo is set up with [Playwright Test Agents](https://playwright.dev/docs/test-agents) for Claude Code (`npx playwright init-agents --loop=claude`). The agent definitions live in `.claude/agents/`, and `.mcp.json` gives them a real browser.
+
+- **Planner** explores the site from [`tests/e2e/seed.spec.ts`](tests/e2e/seed.spec.ts) and writes a test plan. Its plan for what the suite didn't cover yet is in [`specs/saucedemo-coverage-gaps.md`](specs/saucedemo-coverage-gaps.md). Every expected result in it was checked on the live site before the tests were written.
+- **Generator** turns a plan into specs.
+- **Healer** runs a failing test, inspects the page, and fixes it.
+
+The healer got a real job: both new product-details tests failed on every run. It traced the problem to the page object (a button locator that matched three elements, and a click that didn't wait for the details view) and fixed `pages/InventoryPage.ts` without touching a single assertion.
+
+The rule for the healer is **fix the test, never hide a bug**. Locators, waits and steps can change. Expected values and assertions can't. If the site itself is broken, the test gets a `test.fail()` with a `Known bug:` comment instead of being "healed" green. Healer changes go through a PR like any other code.
+
+Bugs found on the live site this way, all kept as `test.fail()`:
+
+| User          | Bug                                                         |
+| ------------- | ----------------------------------------------------------- |
+| standard_user | After "Reset App State", product buttons still say "Remove" |
+| problem_user  | All six products show the same "404" image                  |
+| problem_user  | Choosing a sort option does nothing                         |
+| problem_user  | Typing the last name at checkout overwrites the first name  |
+
+To use the agents, open the repo in Claude Code, approve the `playwright-test` MCP server, and ask for example: "use the playwright-test-healer agent to fix the failing tests".
 
 ## Notes from testing the APIs
 
