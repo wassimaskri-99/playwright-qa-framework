@@ -1,0 +1,36 @@
+@use '../../../../variables.scss' as *;
+
+::ng-deep .pictured-item-select-box-dropdown,
+.pictured-item-select-box {
+  .pictured-item-image {
+    flex: 0 0 2em;
+    width: 2em;
+    height: 2em;
+    border: 1px solid var(--border-color);
+    border-radius: 50%;
+    margin-right: 8px;
+    object-fit: cover;
+    object-position: top;
+  }
+}
+
+::ng-deep .pictured-item-select-box-dropdown .dx-list-item-content,
+.pictured-item-select-field {
+  display: flex;
+  align-items: center;
+}
+
+.pictured-item-select-box:not(.dx-state-readonly) {
+  ::ng-deep .dx-dropdowneditor-field-before-template-wrapper {
+    .pictured-item-image {
+      margin-left: var(--list-padding-left);
+    }
+  }
+}
+
+.pictured-item-select-box.dx-texteditor.dx-editor-filled {
+  ::ng-deep .dx-dropdowneditor-input-wrapper .dx-texteditor-input {
+    padding-left: 0;
+    color: var(--base-text-color);
+  }
+}

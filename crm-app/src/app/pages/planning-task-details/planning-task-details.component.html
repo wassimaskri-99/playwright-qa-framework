@@ -1,0 +1,92 @@
+<dx-scroll-view class="view-wrapper-scroll">
+  <div class="view-wrapper">
+    <dx-toolbar class="toolbar-details theme-dependent">
+      <dxi-toolbar-item location="before">
+        <dx-button
+          icon="arrowleft"
+          stylingMode="text"
+          (onClick)="navigateBack()"
+        >
+        </dx-button>
+      </dxi-toolbar-item>
+      <dxi-toolbar-item location="before" [text]="taskName()"></dxi-toolbar-item>
+      <dxi-toolbar-item location="after" locateInMenu="auto">
+        <dx-drop-down-button
+          text="Actions"
+          stylingMode="text"
+          [dropDownOptions]="{ width: 'auto' }"
+        >
+          <dxi-drop-down-button-item text="Duplicate"></dxi-drop-down-button-item>
+          <dxi-drop-down-button-item text="Close"></dxi-drop-down-button-item>
+          <dxi-drop-down-button-item text="Delete"></dxi-drop-down-button-item>
+        </dx-drop-down-button>
+      </dxi-toolbar-item>
+      <dxi-toolbar-item
+        location="after"
+        locateInMenu="auto"
+        widget="dxButton"
+        showText="inMenu"
+        [options]="{
+          text: 'Attach',
+          icon: 'attach',
+          stylingMode: 'text'
+        }"
+      ></dxi-toolbar-item>
+      <dxi-toolbar-item
+        location="after"
+        locateInMenu="auto"
+        widget="dxButton"
+        showText="inMenu"
+        [options]="{
+          text: 'Refresh',
+          icon: 'refresh',
+          onClick: refresh,
+          stylingMode: 'text'
+        }"
+      ></dxi-toolbar-item>
+    </dx-toolbar>
+
+    <div class="panels">
+      <div class="left">
+        <dx-validation-group>
+          @if (task(); as currentTask) {
+            <task-form [task]="currentTask" [isLoading]="isLoading()"></task-form>
+          }
+        </dx-validation-group>
+      </div>
+
+      <div class="right theme-dependent">
+        <div class="dx-card details-card">
+          <dx-tab-panel
+            secondary="secondary"
+            [focusStateEnabled]="false"
+            [showNavButtons]="true"
+            [deferRendering]="false"
+          >
+            @if (task(); as currentTask) {
+              <dxi-tab-panel-item title="Activities">
+                <card-activities
+                  [isLoading]="isLoading()"
+                  [activities]="currentTask.activities"
+                  [showBy]="true"
+                ></card-activities>
+              </dxi-tab-panel-item>
+              <dxi-tab-panel-item title="Notes">
+                <card-notes
+                  [items]="currentTask.notes"
+                  [user]="currentTask.owner"
+                ></card-notes>
+              </dxi-tab-panel-item>
+              <dxi-tab-panel-item title="Messages">
+                <card-messages
+                  [items]="currentTask.messages"
+                  [user]="currentTask.owner"
+                ></card-messages>
+              </dxi-tab-panel-item>
+            }
+          </dx-tab-panel>
+        </div>
+      </div>
+    </div>
+  </div>
+</dx-scroll-view>

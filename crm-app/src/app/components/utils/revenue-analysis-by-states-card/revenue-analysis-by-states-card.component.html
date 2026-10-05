@@ -1,0 +1,47 @@
+<card-analytics
+  titleText="Revenue Analysis by States"
+  contentClass="sales-by-state-and-city grid"
+>
+  <dx-data-grid
+    [dataSource]="data ?? undefined"
+    [height]="290"
+    [loadPanel]="{ enabled: false }"
+  >
+    <dxi-data-grid-column caption="State" dataField="stateName" [hidingPriority]="2">
+    </dxi-data-grid-column>
+
+    <dxi-data-grid-column caption="City" dataField="city"> </dxi-data-grid-column>
+
+    <dxi-data-grid-column
+      alignment="left"
+      caption="Amount"
+      dataField="total"
+      dataType="number"
+      format="currency"
+      [hidingPriority]="1"
+    >
+    </dxi-data-grid-column>
+
+    <dxi-data-grid-column
+      alignment="left"
+      caption="Percentage"
+      dataField="percentage"
+      cellTemplate="salesBullet"
+      [width]="200"
+    >
+    </dxi-data-grid-column>
+
+    <div *dxTemplate="let cellInfo of 'salesBullet'">
+      <dx-bullet
+        [showTarget]="false"
+        [showZeroLevel]="false"
+        [value]="cellInfo.data.percentage * 100"
+        [startScaleValue]="0"
+        [endScaleValue]="100"
+      >
+        <dxo-bullet-tooltip [enabled]="false"></dxo-bullet-tooltip>
+        <dxo-bullet-size [width]="200" [height]="20"></dxo-bullet-size>
+      </dx-bullet>
+    </div>
+  </dx-data-grid>
+</card-analytics>

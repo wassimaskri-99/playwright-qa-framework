@@ -1,0 +1,45 @@
+{
+  "name": "crm-app",
+  "version": "0.0.0",
+  "scripts": {
+    "ng": "ng",
+    "start": "ng serve",
+    "build": "ng build --base-href=./",
+    "watch": "ng build --watch --configuration development"
+  },
+  "private": true,
+  "dependencies": {
+    "@angular/animations": "^22.2.0",
+    "@angular/cdk": "^22.2.1",
+    "@angular/common": "^22.2.0",
+    "@angular/compiler": "^22.2.0",
+    "@angular/core": "^22.2.0",
+    "@angular/forms": "^22.2.0",
+    "@angular/platform-browser": "^22.2.0",
+    "@angular/platform-browser-dynamic": "^22.2.0",
+    "@angular/router": "^22.2.0",
+    "devexpress-gantt": "^4.1.71",
+    "devextreme": "~26.1.5",
+    "devextreme-angular": "~26.1.5",
+    "devextreme-dist": "~26.1.5",
+    "exceljs": "3.10.0",
+    "file-saver-es": "2.0.5",
+    "jspdf": "^4.2.1",
+    "jspdf-autotable": "^5.0.8",
+    "luxon": "^3.7.2",
+    "micromark": "^4.0.2",
+    "openai": "^6.49.0",
+    "rxjs": "^7.8.2",
+    "tslib": "^2.8.1",
+    "zone.js": "~0.16.2"
+  },
+  "devDependencies": {
+    "@angular-devkit/build-angular": "^22.2.0",
+    "@angular/build": "^22.2.0",
+    "@angular/cli": "^22.2.0",
+    "@angular/compiler-cli": "^22.2.0",
+    "@types/file-saver-es": "^2.0.3",
+    "@types/luxon": "^3.7.4",
+    "typescript": "~6.0.3"
+  }
+}

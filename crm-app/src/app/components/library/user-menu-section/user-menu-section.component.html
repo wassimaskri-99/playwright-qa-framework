@@ -1,0 +1,21 @@
+<div>
+  <div class="user-info">
+    @if (showAvatar) {
+      <div class="image-container">
+        <div
+          [style.backgroundImage]="'url(' + user?.avatarUrl + ')'"
+          class="user-image"
+        ></div>
+      </div>
+    }
+    <div class="user-name">{{ user?.name }}</div>
+  </div>
+  <dx-list
+    #userInfoList
+    [items]="menuItems"
+    [elementAttr]="{
+      class: 'user-info-list'
+    }"
+    (onItemClick)="handleListItemClick($event)"
+  ></dx-list>
+</div>

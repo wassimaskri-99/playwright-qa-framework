@@ -1,0 +1,24 @@
+<dx-select-box
+  label="Status"
+  [value]="value"
+  [class]="'status-select-box ' + (classList || '')"
+  (onValueChanged)="valueChange.emit($event.value)"
+  [items]="items"
+  [readOnly]="readOnly"
+  [stylingMode]="stylingMode"
+  [labelMode]="labelMode"
+  width="100%"
+  placeholder=""
+  [displayExpr]="displayExprFn"
+>
+  <dxo-select-box-field-addons beforeTemplate="before"></dxo-select-box-field-addons>
+  <div *dxTemplate="let data of 'before'">
+    @if (data) {
+      <contact-status class="status-indicator" [value]="data">
+      </contact-status>
+    }
+  </div>
+  <div *dxTemplate="let data of 'item'">
+    <contact-status [value]="data"> </contact-status>
+  </div>
+</dx-select-box>

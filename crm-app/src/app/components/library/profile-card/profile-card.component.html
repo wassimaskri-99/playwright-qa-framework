@@ -1,0 +1,63 @@
+<div class="panel">
+  <div class="title-text panel-header">
+    {{ title }}
+  </div>
+  <div class="form-container">
+    <ng-content select="[top-item]"></ng-content>
+    <dx-form
+      #form
+      labelLocation="top"
+      labelMode="outside"
+      [formData]="cardData"
+      [showColonAfterLabel]="true"
+      [colCount]="(screen.xSmallScreenChanged | async) ? 2 : colCount"
+      [screenByWidth]="getSizeQualifier"
+      (onFieldDataChanged)="onFieldChange()"
+    >
+      @for (item of items; track item.dataField) {
+        <dxi-form-item
+          [dataField]="item.dataField"
+          [editorType]="item.editorType"
+          [editorOptions]="
+            assign
+              | apply
+                : { stylingMode: 'filled', valueChangeEvent: 'input' }
+                : item.editorOptions
+          "
+          [colSpan]="item.colSpan"
+        >
+          @if (item.label) {
+            <dxo-form-label [text]="item.label"> </dxo-form-label>
+          }
+          @for (rule of item.validators ?? []; track rule.type) {
+            <dxi-form-validation-rule
+              [type]="rule.type"
+            ></dxi-form-validation-rule>
+          }
+          @switch (item.dataField) {
+            @case ('status') {
+              <div *dxTemplate>
+                <status-select-box
+                  labelMode="hidden"
+                  stylingMode="filled"
+                  [value]="cardData[item.dataField]"
+                  (valueChange)="onFieldChange(item.dataField, $event)"
+                >
+                </status-select-box>
+              </div>
+            }
+            @case ('supervisor') {
+              <pictured-item-select-box
+                *dxTemplate
+                [label]="item.label"
+                [value]="cardData[item.dataField]"
+                [items]="item.itemsList"
+                (valueChange)="onFieldChange(item.dataField, $event)"
+              ></pictured-item-select-box>
+            }
+          }
+        </dxi-form-item>
+      }
+    </dx-form>
+  </div>
+</div>

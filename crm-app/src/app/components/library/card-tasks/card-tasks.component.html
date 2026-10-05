@@ -1,0 +1,41 @@
+<div id="card-tasks">
+  @if (!isLoading && tasks) {
+    <dx-data-grid
+      #dataGrid
+      [dataSource]="currentTasks"
+      [columnAutoWidth]="true"
+    >
+      <dxo-data-grid-selection mode="multiple" showCheckBoxesMode="always"></dxo-data-grid-selection>
+
+      <dxo-data-grid-row-dragging
+        [allowReordering]="true"
+        [onReorder]="$any(onReorder)"
+        [showDragIcons]="true"
+      ></dxo-data-grid-row-dragging>
+
+      <dxi-data-grid-column
+        dataField="text"
+        caption="Subject"
+        [hidingPriority]="3"
+      ></dxi-data-grid-column>
+      <dxi-data-grid-column
+        dataField="date"
+        dataType="date"
+        caption="Due Date"
+        [hidingPriority]="1"
+      ></dxi-data-grid-column>
+      <dxi-data-grid-column
+        caption="Assigned To"
+        dataField="manager"
+        [hidingPriority]="0"
+      ></dxi-data-grid-column>
+    </dx-data-grid>
+  }
+
+  <dx-load-panel
+    [visible]="isLoading || !tasks"
+    [showPane]="false"
+    container="#card-tasks"
+    [position]="{ of: '#card-tasks' }"
+  ></dx-load-panel>
+</div>

@@ -1,0 +1,26 @@
+@use '../../../../variables.scss' as *;
+@use 'sass:math';
+
+#tasks-grid {
+  min-height: 300px;
+}
+
+.edit-cell {
+  position: relative;
+
+  ::ng-deep .dx-dropdowneditor-field-before-template-wrapper {
+    min-width: 0;
+
+    .status.status-indicator {
+      display: inline-flex;
+      align-items: center;
+      padding-left: var(--list-padding-left);
+      white-space: nowrap;
+
+      span {
+        display: inline-flex;
+        align-items: center;
+      }
+    }
+  }
+}

@@ -1,0 +1,36 @@
+<card-analytics titleText="Sales Performance">
+  <div filter class="sales-filter">
+    <dx-drop-down-button
+      stylingMode="text"
+      [useSelectMode]="true"
+      [items]="groupByPeriods"
+      [selectedItemKey]="groupByPeriods[1]"
+      (onSelectionChanged)="onDropDownSelectionChange($event)"
+    >
+    </dx-drop-down-button>
+  </div>
+
+  <dx-chart [dataSource]="salesByDateAndCategory">
+    <dxo-chart-argument-axis [visualRange]="visualRange"> </dxo-chart-argument-axis>
+    <dxo-chart-tooltip
+      [enabled]="true"
+      [customizeTooltip]="customiseToolip"
+    ></dxo-chart-tooltip>
+    <dxo-chart-series-template nameField="category"> </dxo-chart-series-template>
+
+    <dxo-chart-common-series-settings
+      argumentField="date"
+      valueField="total"
+      hoverMode="includePoints"
+    >
+      <dxo-chart-point hoverMode="allArgumentPoints"></dxo-chart-point>
+    </dxo-chart-common-series-settings>
+
+    <dxo-chart-argument-axis argumentType="datetime" [valueMarginsEnabled]="false">
+    </dxo-chart-argument-axis>
+
+    <dxo-chart-legend [visible]="false"></dxo-chart-legend>
+
+    <dxo-chart-size [height]="270"></dxo-chart-size>
+  </dx-chart>
+</card-analytics>

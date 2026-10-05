@@ -21,7 +21,7 @@ module.exports = {
     // We assert on API responses inside loops/branches for CRUD flows.
     'playwright/no-conditional-in-test': 'off',
   },
-  ignorePatterns: ['node_modules', 'playwright-report', 'test-results', 'dist', '.features-gen'],
+  ignorePatterns: ['node_modules', 'playwright-report', 'test-results', 'dist', '.features-gen', 'crm-app'],
   overrides: [
     {
       // Cucumber step definitions assert inside Given/When/Then callbacks,

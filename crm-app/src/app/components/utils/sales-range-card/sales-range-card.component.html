@@ -1,0 +1,27 @@
+<card-analytics contentClass="sales-range" [isMenuVisible]="false">
+  @if (data && data.length > 0) {
+    <dx-range-selector
+      [dataSource]="data"
+      [(value)]="visualRange"
+      (onValueChanged)="onRangeChanged($event)"
+    >
+      <dxo-range-selector-scale
+        minorTickInterval="day"
+        tickInterval="month"
+        valueType="datetime"
+      >
+        <dxo-range-selector-minor-tick [visible]="false"></dxo-range-selector-minor-tick>
+        <dxo-range-selector-marker [visible]="false"></dxo-range-selector-marker>
+        <dxo-range-selector-label format="MMM yyyy"></dxo-range-selector-label>
+      </dxo-range-selector-scale>
+      <dxo-range-selector-size [height]="90"></dxo-range-selector-size>
+
+      <dxo-range-selector-chart>
+        <dxi-range-selector-series type="line" argumentField="date" valueField="total">
+        </dxi-range-selector-series>
+      </dxo-range-selector-chart>
+    </dx-range-selector>
+  } @else {
+  <dx-load-indicator class="centered"></dx-load-indicator>
+  }
+</card-analytics>

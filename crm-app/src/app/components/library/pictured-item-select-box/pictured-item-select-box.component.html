@@ -1,0 +1,35 @@
+<dx-select-box
+  class="pictured-item-select-box"
+  [label]="label"
+  [value]="value"
+  (onValueChanged)="valueChange.emit($event.value)"
+  [items]="items"
+  valueExpr="name"
+  stylingMode="filled"
+  labelMode="hidden"
+  width="100%"
+  [displayExpr]="displayExprFn"
+  [dropDownOptions]="{
+    wrapperAttr: { class: 'pictured-item-select-box-dropdown' }
+  }"
+>
+  <dxo-select-box-field-addons beforeTemplate="before"></dxo-select-box-field-addons>
+  <div *dxTemplate="let data of 'before'" class="pictured-item-select-field">
+    @if (data?.image) {
+      <img
+        [alt]="data.name"
+        class="pictured-item-image"
+        src="data:image/png;base64,{{ data.image }}"
+      />
+    }
+  </div>
+  <div *dxTemplate="let data of 'item'">
+    <img
+      [alt]="data.name"
+      class="pictured-item-image"
+      height="20px"
+      src="data:image/png;base64,{{ data.image }}"
+    />
+    {{ data.name }}
+  </div>
+</dx-select-box>

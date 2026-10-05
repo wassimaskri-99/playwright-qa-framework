@@ -6,9 +6,10 @@ const bddTestDir = defineBddConfig({
   steps: ['steps/*.steps.ts', 'fixtures/pages.fixture.ts'],
 });
 
-// Four independent projects: UI flows against SauceDemo, API contract tests
+// Five independent projects: UI flows against SauceDemo, API contract tests
 // against Restful-Booker, the Cucumber/Gherkin scenarios compiled by
-// playwright-bdd, and the AI shopping assistant (local LLM via Ollama).
+// playwright-bdd, the DevExtreme CRM app (crm-app/), and the AI shopping
+// assistant (local LLM via Ollama).
 // Kept separate so `npm run test:api` never spins up a browser and CI can
 // shard them if the suite grows.
 export default defineConfig({
@@ -24,11 +25,21 @@ export default defineConfig({
     // e.g. `SLOWMO=500 npm run test:headed` to watch each browser action.
     launchOptions: { slowMo: Number(process.env.SLOWMO ?? 0) },
   },
-  webServer: {
-    command: 'node ai-assistant/server.ts',
-    url: 'http://localhost:3100/health',
-    reuseExistingServer: !process.env.CI,
-  },
+  webServer: [
+    {
+      command: 'node ai-assistant/server.ts',
+      url: 'http://localhost:3100/health',
+      reuseExistingServer: !process.env.CI,
+    },
+    {
+      // DevExtreme CRM template (crm-app/). 4300 so it doesn't clash with
+      // another Angular app on the default 4200.
+      command: 'npm --prefix crm-app start -- --port 4300',
+      url: 'http://localhost:4300',
+      reuseExistingServer: !process.env.CI,
+      timeout: 180_000,
+    },
+  ],
   projects: [
     {
       name: 'e2e',
@@ -51,6 +62,14 @@ export default defineConfig({
       use: {
         ...devices['Desktop Chrome'],
         baseURL: 'https://www.saucedemo.com',
+      },
+    },
+    {
+      name: 'crm',
+      testDir: './tests/crm',
+      use: {
+        ...devices['Desktop Chrome'],
+        baseURL: 'http://localhost:4300',
       },
     },
     {

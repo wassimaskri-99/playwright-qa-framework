@@ -1,0 +1,122 @@
+$theme-mode: null !default;
+
+@use 'devextreme/scss/widgets/fluent/colors' as * with
+  ($color: 'blue', $mode: $theme-mode);
+@use 'devextreme/scss/widgets/fluent/sizes' as * with ($size: 'default');
+@use 'devextreme/scss/widgets/fluent/fieldset/sizes' as *;
+@use 'theme-special' as * with ($theme: 'fluent');
+@use 'sass:math';
+@use 'sass:color';
+@use 'sass:meta';
+
+:root {
+  @if meta.variable-exists('base-warning') and
+    meta.type-of($base-warning) ==
+    'color'
+  {
+    --dark-warning-color: #{color.adjust(
+        $base-warning,
+        $hue: 0deg - 12deg,
+        $lightness: 0% - 3.73%
+      )};
+  } /* stylelint-disable-line at-rule-empty-line-before */ @else {
+    --dark-warning-color: var(--warning-color);
+  }
+
+  --typography-bg: var(--base-bg);
+
+  @if meta.variable-exists('base-typography-bg') {
+    --typography-bg: var(--dx-color-main-bg);
+  }
+
+  --side-panel-min-width: 48px;
+  --content-padding: 24px;
+  --page-padding: 32px;
+  --header-toolbar-vertical-padding: 10px;
+  --footer-height: 70px;
+  --toolbar-vertical-padding: 16px;
+  --toolbar-margin-bottom: var(--content-padding);
+  --base-bg: var(--dx-component-color-bg);
+
+  @if meta.variable-exists('base-bg') and meta.type-of($base-bg) == 'color' {
+    --base-bg-darken-5: #{color.adjust($base-bg, $lightness: 0% - 5%)};
+    --base-bg-darken-4: #{color.adjust($base-bg, $lightness: 0% - 4%)};
+  } /* stylelint-disable-line at-rule-empty-line-before */ @else {
+    --base-bg-darken-5: var(--base-bg);
+    --base-bg-darken-4: var(--base-bg);
+  }
+
+  --side-panel-background: var(--base-bg-darken-5);
+  --card-background: var(--base-bg);
+  --calendar-width: 292px;
+
+  @if $theme-mode == dark {
+    --card-background: var(--base-bg-darken-5);
+  }
+
+  --border-color: var(--dx-color-border);
+  --accent-color: var(--dx-color-primary);
+  --success-color: var(--dx-color-success);
+  --info-color: var(--dx-color-primary);
+  --warning-color: var(--dx-color-warning);
+  --error-color: var(--dx-color-danger);
+  --base-text-color: var(--dx-color-text);
+
+  @if meta.variable-exists('base-text-color') and
+    meta.type-of($base-text-color) ==
+    'color'
+  {
+    --background-gray-color: #{color.change($base-text-color, $alpha: 0.04)};
+    --base-text-color-alpha: #{color.change(
+        $base-text-color,
+        $alpha: color.alpha($base-text-color) * 0.7
+      )};
+  } /* stylelint-disable-line at-rule-empty-line-before */ @else {
+    --background-gray-color: rgba(0, 0, 0, 0.04);
+    --base-text-color-alpha: rgba(0, 0, 0, 0.7);
+  }
+
+  --texteditor-edit-color: var(--dx-texteditor-color-text);
+  --texteditor-label-color: var(--dx-texteditor-color-label);
+  --toolbar-height: var(--dx-toolbar-height);
+  --filled-texteditor-input-horizontal-padding: #{$fluent-field-value-horizontal-padding};
+  --list-padding-left: var(--dx-list-item-padding-inline);
+  --list-padding-vertical: var(--dx-list-item-padding-block);
+  --footer-left-padding: calc(
+    (var(--side-panel-min-width) - var(--dx-font-size-icon)) / 2
+  );
+  --popup-toolbar-item-spacing: var(--dx-popup-toolbar-item-padding-inline);
+  --drop-down-gnrc-button-height: var(--dx-component-height);
+  --theme-padding: var(--dx-button-padding-inline);
+
+  @if meta.variable-exists('base-danger') and
+    meta.type-of($base-danger) ==
+    'color'
+  {
+    --tooltip-danger-button-color: #{color.change($base-danger, $alpha: 0.1)};
+  } /* stylelint-disable-line at-rule-empty-line-before */ @else {
+    --tooltip-danger-button-color: rgba(255, 0, 0, 0.1);
+  }
+
+  @if meta.variable-exists('base-success') and
+    meta.type-of($base-success) ==
+    'color'
+  {
+    --tooltip-success-button-color: #{color.change($base-success, $alpha: 0.1)};
+  } /* stylelint-disable-line at-rule-empty-line-before */ @else {
+    --tooltip-success-button-color: rgba(0, 128, 0, 0.1);
+  }
+
+  --subtitle-text-color: var(--texteditor-label-color);
+  --button-height-theme-difference: calc(
+    (var(--theme-padding) - 10px) / 3
+  ); // WA for no button-height in fluent theme
+
+  --button-height: calc(
+    26px + var(--button-height-theme-difference)
+  ); // remove when design-system is released
+
+  --scheduler-toolbar-height: calc(
+    var(--button-height) + 2 * var(--theme-padding)
+  );
+}

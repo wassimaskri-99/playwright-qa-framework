@@ -25,6 +25,9 @@ jobs:
 
       - run: npm ci
 
+      # DevExtreme CRM template under test (crm-app/), served by Playwright.
+      - run: npm ci --prefix crm-app
+
       - run: npx playwright install --with-deps chromium
 
       # Local open-source LLM for the AI assistant tests: free, no API key.
