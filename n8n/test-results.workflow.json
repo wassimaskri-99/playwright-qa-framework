@@ -1,0 +1,85 @@
+{
+  "id": "playwrightTestResults",
+  "name": "Playwright test results → Telegram",
+  "active": true,
+  "settings": { "executionOrder": "v1" },
+  "nodes": [
+    {
+      "id": "b1d3c0a1-0001-4c1a-9a01-000000000001",
+      "name": "Test results",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [0, 300],
+      "webhookId": "5c0e8a52-7d1f-4e43-9b8e-test-results01",
+      "parameters": { "httpMethod": "POST", "path": "test-results", "options": {} }
+    },
+    {
+      "id": "b1d3c0a1-0002-4c1a-9a01-000000000002",
+      "name": "Any failures?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [240, 300],
+      "parameters": {
+        "conditions": {
+          "options": { "caseSensitive": true, "leftValue": "", "typeValidation": "loose" },
+          "conditions": [
+            {
+              "id": "c0a1b2c3-0000-4000-8000-000000000001",
+              "leftValue": "={{ $json.body.failed }}",
+              "rightValue": 0,
+              "operator": { "type": "number", "operation": "gt" }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      }
+    },
+    {
+      "id": "b1d3c0a1-0003-4c1a-9a01-000000000003",
+      "name": "Failure message",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [480, 200],
+      "parameters": {
+        "jsCode": "const r = $input.first().json.body;\nconst lines = r.failures.slice(0, 10).map((f) => `• [${f.project}] ${f.title}\\n   ${f.error ?? ''}`);\nif (r.failures.length > 10) lines.push(`…and ${r.failures.length - 10} more`);\n\nconst text = [\n  `❌ ${r.failed} failed, ${r.passed} passed (${r.durationSeconds}s) on ${r.branch}`,\n  '',\n  ...lines,\n  '',\n  r.runUrl ? `Run: ${r.runUrl}` : null,\n  `Report: ${r.reportUrl}`,\n].filter((l) => l !== null).join('\\n');\n\nreturn [{ json: { text } }];"
+      }
+    },
+    {
+      "id": "b1d3c0a1-0004-4c1a-9a01-000000000004",
+      "name": "Success message",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [480, 400],
+      "parameters": {
+        "jsCode": "const r = $input.first().json.body;\nconst flaky = r.flaky ? `, ${r.flaky} flaky` : '';\n\nconst text = [\n  `✅ All ${r.passed} tests passed${flaky} (${r.durationSeconds}s) on ${r.branch}`,\n  r.runUrl ? `Run: ${r.runUrl}` : null,\n  `Report: ${r.reportUrl}`,\n].filter((l) => l !== null).join('\\n');\n\nreturn [{ json: { text } }];"
+      }
+    },
+    {
+      "id": "b1d3c0a1-0005-4c1a-9a01-000000000005",
+      "name": "Send to Telegram",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [720, 300],
+      "parameters": {
+        "method": "POST",
+        "url": "=https://api.telegram.org/bot{{ $env.TELEGRAM_BOT_TOKEN }}/sendMessage",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ chat_id: $env.TELEGRAM_CHAT_ID, text: $json.text, disable_web_page_preview: true }) }}",
+        "options": {}
+      }
+    }
+  ],
+  "connections": {
+    "Test results": { "main": [[{ "node": "Any failures?", "type": "main", "index": 0 }]] },
+    "Any failures?": {
+      "main": [
+        [{ "node": "Failure message", "type": "main", "index": 0 }],
+        [{ "node": "Success message", "type": "main", "index": 0 }]
+      ]
+    },
+    "Failure message": { "main": [[{ "node": "Send to Telegram", "type": "main", "index": 0 }]] },
+    "Success message": { "main": [[{ "node": "Send to Telegram", "type": "main", "index": 0 }]] }
+  }
+}
