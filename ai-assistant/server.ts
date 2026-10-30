@@ -29,6 +29,50 @@ Rules:
 - Reply in JSON with: "answer" (short text for the customer), "products" (catalog products
   you mention, with name and price), "refused" (boolean).`;
 
+const refusal = {
+  answer: 'Sorry, I can only help with shopping in the Swag Labs store.',
+  products: [],
+  refused: true,
+};
+
+// A 1.5B model follows instructions it finds in the message, so the obvious
+// injection attempts are refused before they ever reach it.
+const injectionPatterns = [
+  /ignore (all |your |the |any )?(previous |prior )?(rules|instructions)/i,
+  /admin mode/i,
+  /new (rules|instructions)/i,
+];
+
+type Reply = { answer: string; products: { name: string; price: number }[]; refused: boolean };
+
+// The model is never trusted with prices: products are matched against the
+// catalog by name, and an answer quoting a price outside the catalog (or
+// calling something free) is replaced.
+function checkReply(reply: Reply): Reply {
+  if (reply.refused) return { answer: reply.answer, products: [], refused: true };
+
+  const products = reply.products
+    .map((p) => catalog.find((c) => c.name.toLowerCase() === p.name.toLowerCase()))
+    .filter((p) => p !== undefined);
+
+  if (/\b(is|are|for) free\b|free of charge|\$0(\.00)?\b/i.test(reply.answer)) {
+    return { ...refusal };
+  }
+
+  const quoted = [...reply.answer.matchAll(/\$\s?(\d+(?:\.\d+)?)|(\d+(?:\.\d+)?) dollars?/gi)].map((m) =>
+    Number(m[1] ?? m[2]),
+  );
+  const realPrices = products.map((p) => p.price);
+  if (quoted.some((price) => !realPrices.includes(price))) {
+    const answer = products.length
+      ? products.map((p) => `The ${p.name} costs $${p.price}.`).join(' ')
+      : 'Sorry, I could not find that product in the Swag Labs store.';
+    return { answer, products, refused: false };
+  }
+
+  return { answer: reply.answer, products, refused: false };
+}
+
 // Ollama constrains the model output to this JSON schema.
 const replySchema = {
   type: 'object',
@@ -47,16 +91,16 @@ const replySchema = {
   required: ['answer', 'products', 'refused'],
 };
 
-async function askModel(message: string) {
+async function chat(system: string, message: string, format: object) {
   const response = await fetch(`${OLLAMA_URL}/api/chat`, {
     method: 'POST',
     body: JSON.stringify({
       model: MODEL,
       stream: false,
-      format: replySchema,
+      format,
       options: { temperature: 0.2 },
       messages: [
-        { role: 'system', content: systemPrompt },
+        { role: 'system', content: system },
         { role: 'user', content: message },
       ],
     }),
@@ -66,6 +110,31 @@ async function askModel(message: string) {
   }
   const body = (await response.json()) as { message: { content: string } };
   return JSON.parse(body.message.content);
+}
+
+// Picking one category from a short list is much easier for a small model
+// than remembering to refuse while it is busy answering.
+const topicPrompt = `Classify the customer message of an online clothing store into one category:
+- "shopping": questions about products, prices, recommendations, availability
+- "creative_writing": asks to write a poem, story, song, joke, essay or code
+- "general_question": anything else (weather, news, facts, sports)
+Reply in JSON with "category".`;
+
+async function isAboutStore(message: string) {
+  const result = await chat(topicPrompt, message, {
+    type: 'object',
+    properties: {
+      category: { type: 'string', enum: ['shopping', 'creative_writing', 'general_question'] },
+    },
+    required: ['category'],
+  });
+  return result.category === 'shopping';
+}
+
+async function reply(message: string): Promise<Reply> {
+  if (injectionPatterns.some((pattern) => pattern.test(message))) return { ...refusal };
+  if (!(await isAboutStore(message))) return { ...refusal };
+  return checkReply((await chat(systemPrompt, message, replySchema)) as Reply);
 }
 
 function sendJson(res: http.ServerResponse, status: number, data: unknown) {
@@ -88,7 +157,7 @@ const server = http.createServer(async (req, res) => {
       if (typeof message !== 'string' || !message.trim()) {
         return sendJson(res, 400, { error: 'message is required' });
       }
-      return sendJson(res, 200, await askModel(message));
+      return sendJson(res, 200, await reply(message));
     }
     sendJson(res, 404, { error: 'not found' });
   } catch (error) {
